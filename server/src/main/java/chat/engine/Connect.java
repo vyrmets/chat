@@ -9,8 +9,13 @@ import java.nio.charset.StandardCharsets;
 public class Connect implements Runnable {
 
     private final static Logger LOGGER = Logger.getLogger(Server.class);
+
+    private final String exit = "exit";
+
     private Socket socket;
+
     private BufferedWriter writer;
+
     private BufferedReader reader;
 
     public Connect(Socket socket) throws IOException {
@@ -23,9 +28,8 @@ public class Connect implements Runnable {
     public void run() {
         LOGGER.info("Client connected");
         while (true) {
-            String message = null;
             try {
-                message = reader.readLine();
+               String message = reader.readLine();
                 LOGGER.info(message);
 
                 if (disconnectFromServer(message)) {
@@ -34,9 +38,7 @@ public class Connect implements Runnable {
             } catch (IOException e) {
                 LOGGER.error("Failed to read message");
                 try {
-                    socket.close();
-                    reader.close();
-                    writer.close();
+                    closeConnection();
                 } catch (IOException ex) {
                     ex.printStackTrace();
                 }
@@ -49,19 +51,25 @@ public class Connect implements Runnable {
         InputStreamReader inputStreamReader = new InputStreamReader(inputStream, StandardCharsets.UTF_8);
         return new BufferedReader(inputStreamReader);
     }
+
     private BufferedWriter getWriter(Socket socket) throws IOException {
         OutputStream outputStream = socket.getOutputStream();
         OutputStreamWriter outputStreamWriter = new OutputStreamWriter(outputStream, StandardCharsets.UTF_8);
         return new BufferedWriter(outputStreamWriter);
     }
+
     private boolean disconnectFromServer(String message) throws IOException {
-        if (message.equals("exit")) {
+        if (message.equals(exit)) {
             LOGGER.info("Client disconnect");
-            socket.close();
-            reader.close();
-            writer.close();
+            closeConnection();
             return true;
         }
         return false;
+    }
+
+    private void closeConnection() throws IOException {
+        socket.close();
+        reader.close();
+        writer.close();
     }
 }
