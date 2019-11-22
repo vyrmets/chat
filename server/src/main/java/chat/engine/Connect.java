@@ -27,12 +27,21 @@ public class Connect implements Runnable {
         LOGGER.info("Client connected");
 
         while (true) {
+            String message = null;
             try {
-                String message = reader.readLine();
+                message = reader.readLine();
                 LOGGER.info(message);
-
                 writer.write(message + "\r\n");
                 writer.flush();
+
+                if(message.equals("exit")){
+                    LOGGER.info("Client disconnect");
+                    socket.close();
+                    reader.close();
+                    writer.close();
+                    break;
+                }
+
             } catch (IOException e) {
                 LOGGER.error("Failed to read message");
                 try {
@@ -57,4 +66,5 @@ public class Connect implements Runnable {
         OutputStreamWriter outputStreamWriter = new OutputStreamWriter(outputStream, StandardCharsets.UTF_8);
         return new BufferedWriter(outputStreamWriter);
     }
+
 }
