@@ -9,11 +9,8 @@ import java.nio.charset.StandardCharsets;
 public class Connect implements Runnable {
 
     private final static Logger LOGGER = Logger.getLogger(Server.class);
-
     private Socket socket;
-
     private BufferedWriter writer;
-
     private BufferedReader reader;
 
     public Connect(Socket socket) throws IOException {
@@ -25,28 +22,15 @@ public class Connect implements Runnable {
     @Override
     public void run() {
         LOGGER.info("Client connected");
-
         while (true) {
             String message = null;
             try {
                 message = reader.readLine();
                 LOGGER.info(message);
-               // writer.write(message + "\r\n");
-               // writer.flush();
 
-                DisconnectFromServer(message);
-                if(socket.isClosed()){
+                if (disconnectFromServer(message)) {
                     break;
                 }
-
-                if(message.equals("exit")){
-                    LOGGER.info("Client disconnect");
-                    socket.close();
-                    reader.close();
-                    writer.close();
-                    break;
-                }
-
             } catch (IOException e) {
                 LOGGER.error("Failed to read message");
                 try {
@@ -65,19 +49,19 @@ public class Connect implements Runnable {
         InputStreamReader inputStreamReader = new InputStreamReader(inputStream, StandardCharsets.UTF_8);
         return new BufferedReader(inputStreamReader);
     }
-
     private BufferedWriter getWriter(Socket socket) throws IOException {
         OutputStream outputStream = socket.getOutputStream();
         OutputStreamWriter outputStreamWriter = new OutputStreamWriter(outputStream, StandardCharsets.UTF_8);
         return new BufferedWriter(outputStreamWriter);
     }
-
-    private void DisconnectFromServer(String message) throws IOException {
-        if(message.equals("exit")){
+    private boolean disconnectFromServer(String message) throws IOException {
+        if (message.equals("exit")) {
             LOGGER.info("Client disconnect");
             socket.close();
             reader.close();
             writer.close();
+            return true;
         }
+        return false;
     }
 }
