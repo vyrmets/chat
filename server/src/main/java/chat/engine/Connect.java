@@ -31,8 +31,13 @@ public class Connect implements Runnable {
             try {
                 message = reader.readLine();
                 LOGGER.info(message);
-                writer.write(message + "\r\n");
-                writer.flush();
+               // writer.write(message + "\r\n");
+               // writer.flush();
+
+                DisconnectFromServer(message);
+                if(socket.isClosed()){
+                    break;
+                }
 
                 if(message.equals("exit")){
                     LOGGER.info("Client disconnect");
@@ -67,4 +72,12 @@ public class Connect implements Runnable {
         return new BufferedWriter(outputStreamWriter);
     }
 
+    private void DisconnectFromServer(String message) throws IOException {
+        if(message.equals("exit")){
+            LOGGER.info("Client disconnect");
+            socket.close();
+            reader.close();
+            writer.close();
+        }
+    }
 }
