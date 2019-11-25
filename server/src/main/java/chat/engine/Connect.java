@@ -27,10 +27,20 @@ public class Connect implements Runnable {
     @Override
     public void run() {
         LOGGER.info("Client connected");
+        
+        LOGGER.info("Please enter your name: ");
+        String name = null;
+        try {
+            name = reader.readLine();
+
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
         while (true) {
             try {
                 String message = reader.readLine();
-                LOGGER.info(message);
+                LOGGER.info(name + " - " + message);
 
                 if (disconnectFromServer(message)) {
                     break;
