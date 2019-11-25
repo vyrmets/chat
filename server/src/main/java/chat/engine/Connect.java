@@ -10,7 +10,7 @@ public class Connect implements Runnable {
 
     private final static Logger LOGGER = Logger.getLogger(Server.class);
 
-    private final String exit = "exit";
+    private static final String EXIT = "exit";
 
     private Socket socket;
 
@@ -59,7 +59,7 @@ public class Connect implements Runnable {
     }
 
     private boolean disconnectFromServer(String message) throws IOException {
-        if (message.equals(exit)) {
+        if (message.equals(EXIT)) {
             LOGGER.info("Client disconnect");
             closeConnection();
             return true;
