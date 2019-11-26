@@ -57,7 +57,7 @@ public class Connect implements Runnable {
                 try {
                     closeConnection();
                 } catch (IOException ex) {
-                    throw new RuntimeException(e);
+                    LOGGER.info("context", e);
                 }
             }
         }
