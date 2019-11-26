@@ -12,6 +12,8 @@ public class Connect implements Runnable {
 
     private static final String EXIT = "exit";
 
+    private String name = "";
+
     private Socket socket;
 
     private BufferedWriter writer;
@@ -26,14 +28,12 @@ public class Connect implements Runnable {
 
     @Override
     public void run() {
-        LOGGER.info("Client connected");
 
-        LOGGER.info("Please enter your name: ");
-        LOGGER.info("Please enter your name: ");
-
-        String name = null;
         try {
+            writer.write("Please enter your name: ");
+            writer.flush();
             name = reader.readLine();
+            LOGGER.info("Client: " + name + " connected");
 
         } catch (IOException e) {
             e.printStackTrace();
@@ -41,8 +41,16 @@ public class Connect implements Runnable {
 
         while (true) {
             try {
+
                 String message = reader.readLine();
-                LOGGER.info(name + " - " + message);
+
+                if(message == null) {
+                    LOGGER.info("Client: " + name + " disconnect");
+                    closeConnection();
+                    break;
+                }
+
+                LOGGER.info(name + ": " + message);
 
                 if (disconnectFromServer(message)) {
                     break;
@@ -71,8 +79,9 @@ public class Connect implements Runnable {
     }
 
     private boolean disconnectFromServer(String message) throws IOException {
-        if (message.equals(EXIT)) {
-            LOGGER.info("Client disconnect");
+
+        if (message.equalsIgnoreCase(EXIT)) {
+            LOGGER.info("Client: " + name + " disconnect");
             closeConnection();
             return true;
         }
