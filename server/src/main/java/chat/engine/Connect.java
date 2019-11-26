@@ -8,9 +8,11 @@ import java.nio.charset.StandardCharsets;
 
 public class Connect implements Runnable {
 
-    private final static Logger LOGGER = Logger.getLogger(Server.class);
+    private static final String CLIENT = "Client: ";
 
     private static final String EXIT = "exit";
+
+    private static final Logger LOGGER = Logger.getLogger(Connect.class);
 
     private String name = "";
 
@@ -33,10 +35,10 @@ public class Connect implements Runnable {
             writer.write("Please enter your name: ");
             writer.flush();
             name = reader.readLine();
-            LOGGER.info("Client: " + name + " connected");
+            LOGGER.info(CLIENT + name + " connected");
 
         } catch (IOException e) {
-            e.printStackTrace();
+            LOGGER.info("context", e);
         }
 
         while (true) {
@@ -44,23 +46,18 @@ public class Connect implements Runnable {
 
                 String message = reader.readLine();
 
-                if(message == null) {
-                    LOGGER.info("Client: " + name + " disconnect");
-                    closeConnection();
-                    break;
-                }
-
-                LOGGER.info(name + ": " + message);
-
                 if (disconnectFromServer(message)) {
                     break;
+                } else {
+                    LOGGER.info(name + ": " + message);
                 }
+
             } catch (IOException e) {
                 LOGGER.error("Failed to read message");
                 try {
                     closeConnection();
                 } catch (IOException ex) {
-                    ex.printStackTrace();
+                    throw new RuntimeException(e);
                 }
             }
         }
@@ -80,8 +77,8 @@ public class Connect implements Runnable {
 
     private boolean disconnectFromServer(String message) throws IOException {
 
-        if (message.equalsIgnoreCase(EXIT)) {
-            LOGGER.info("Client: " + name + " disconnect");
+        if (message == null || message.equalsIgnoreCase(EXIT)) {
+            LOGGER.info(CLIENT + name + " disconnect");
             closeConnection();
             return true;
         }
