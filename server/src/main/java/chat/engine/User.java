@@ -1,7 +1,5 @@
 package chat.engine;
 
-import java.util.HashMap;
-
 public class User {
 
     private String name;
