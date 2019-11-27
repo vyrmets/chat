@@ -1,7 +1,5 @@
 package chat.engine;
 
-import org.apache.log4j.Logger;
-
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
 import java.io.IOException;
