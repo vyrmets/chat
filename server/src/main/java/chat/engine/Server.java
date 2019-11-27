@@ -8,9 +8,9 @@ import java.net.Socket;
 
 public class Server {
 
-    private final static Logger LOGGER = Logger.getLogger(Server.class);
+    private static final Logger LOGGER = Logger.getLogger(Server.class);
 
-    private final static int PORT = 8080;
+    private static final int PORT = 8080;
 
     public void run() throws IOException {
         LOGGER.info("Server started at port: " + PORT);
@@ -22,6 +22,10 @@ public class Server {
             } catch (IOException e) {
                 LOGGER.error("Failed to start server: ", e);
             }
+            if (false) {
+                break;
+            }
         }
     }
+
 }

@@ -8,9 +8,11 @@ import java.nio.charset.StandardCharsets;
 
 public class Connect implements Runnable {
 
-    private final static Logger LOGGER = Logger.getLogger(Server.class);
-
     private static final String EXIT = "exit";
+
+    private static final Logger LOGGER = Logger.getLogger(Connect.class);
+
+    private String name = "";
 
     private Socket socket;
 
@@ -26,21 +28,37 @@ public class Connect implements Runnable {
 
     @Override
     public void run() {
-        LOGGER.info("Client connected");
+        try {
+            AuthorizationService authorizationService = new AuthorizationService();
+            authorizationService.registration(writer, reader);
+
+            enterName();
+
+            while (name.isEmpty()) {
+                enterName();
+            }
+
+            LOGGER.info("Client: " + name + " connected");
+
+        } catch (IOException e) {
+            LOGGER.info("Failed to proceed message: ", e);
+        }
+
         while (true) {
             try {
-               String message = reader.readLine();
-                LOGGER.info(message);
+                String message = reader.readLine();
 
                 if (disconnectFromServer(message)) {
                     break;
+                } else {
+                    LOGGER.info(name + ": " + message);
                 }
             } catch (IOException e) {
                 LOGGER.error("Failed to read message");
                 try {
                     closeConnection();
                 } catch (IOException ex) {
-                    ex.printStackTrace();
+                    LOGGER.info("Failed to proceed message: ", e);
                 }
             }
         }
@@ -59,8 +77,8 @@ public class Connect implements Runnable {
     }
 
     private boolean disconnectFromServer(String message) throws IOException {
-        if (message.equals(EXIT)) {
-            LOGGER.info("Client disconnect");
+        if (message == null || message.equalsIgnoreCase(EXIT)) {
+            LOGGER.info("Client: " + name + " disconnect");
             closeConnection();
             return true;
         }
@@ -71,5 +89,11 @@ public class Connect implements Runnable {
         socket.close();
         reader.close();
         writer.close();
+    }
+
+    private void enterName() throws IOException {
+        writer.write("Please enter your name: ");
+        writer.flush();
+        name = reader.readLine();
     }
 }
