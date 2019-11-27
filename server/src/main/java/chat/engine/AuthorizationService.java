@@ -37,8 +37,24 @@ public class AuthorizationService {
                 user.setPassword(reader.readLine());
                 break;
             } else if (choice.equals("2")) {
-                logger.info("OOKKK");
-                break;
+                writer.write("Please enter your name: ");
+                writer.flush();
+                user.setName(reader.readLine());
+                writer.write("Please enter your password: ");
+                writer.flush();
+                user.setPassword(reader.readLine());
+                writer.write("Please confirm your password: ");
+                writer.flush();
+                String confirm =reader.readLine();
+                if(user.getPassword().equals(confirm)){
+                    break;
+                }else{
+                    writer.write("Registration failed, please try again");
+                    writer.flush();
+                    writer.newLine();
+                    writer.write("Enter the number '1' if you want to loggin or '2' if you want to registration: ");
+                    writer.flush();
+                }
             }else {
                 writer.write("Please enter the number 1 or 2: ");
                 writer.flush();
