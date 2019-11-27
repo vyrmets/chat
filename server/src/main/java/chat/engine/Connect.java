@@ -28,11 +28,9 @@ public class Connect implements Runnable {
 
     @Override
     public void run() {
-
         try {
-
             AuthorizationService authorizationService = new AuthorizationService();
-            authorizationService.registration(writer,reader);
+            authorizationService.registration(writer, reader);
 
             enterName();
 
@@ -47,7 +45,6 @@ public class Connect implements Runnable {
         }
 
         while (true) {
-
             try {
                 String message = reader.readLine();
 
@@ -56,7 +53,6 @@ public class Connect implements Runnable {
                 } else {
                     LOGGER.info(name + ": " + message);
                 }
-
             } catch (IOException e) {
                 LOGGER.error("Failed to read message");
                 try {
@@ -81,7 +77,6 @@ public class Connect implements Runnable {
     }
 
     private boolean disconnectFromServer(String message) throws IOException {
-
         if (message == null || message.equalsIgnoreCase(EXIT)) {
             LOGGER.info("Client: " + name + " disconnect");
             closeConnection();

@@ -18,7 +18,6 @@ public class AuthorizationService {
     }
 
     private void setClientBase(BufferedWriter writer, BufferedReader reader) throws IOException {
-
         writer.write("Enter the number '1' if you want to loggin or '2' if you want to registration: ");
         writer.flush();
 
