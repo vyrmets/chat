@@ -32,7 +32,7 @@ public class Connect implements Runnable {
         try {
 
             AuthorizationService authorizationService = new AuthorizationService();
-            authorizationService.registration(LOGGER,writer,reader);
+            authorizationService.registration(writer,reader);
 
             enterName();
 
