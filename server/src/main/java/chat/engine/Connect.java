@@ -8,8 +8,6 @@ import java.nio.charset.StandardCharsets;
 
 public class Connect implements Runnable {
 
-    private static final String CLIENT = "Client: ";
-
     private static final String EXIT = "exit";
 
     private static final Logger LOGGER = Logger.getLogger(Connect.class);
@@ -32,18 +30,25 @@ public class Connect implements Runnable {
     public void run() {
 
         try {
-            writer.write("Please enter your name: ");
-            writer.flush();
-            name = reader.readLine();
-            LOGGER.info(CLIENT + name + " connected");
+
+            AuthorizationService authorizationService = new AuthorizationService();
+            authorizationService.registration(LOGGER,writer,reader);
+
+            enterName();
+
+            while (name.isEmpty()) {
+                enterName();
+            }
+
+            LOGGER.info("Client: " + name + " connected");
 
         } catch (IOException e) {
-            LOGGER.info("context", e);
+            LOGGER.info("Failed to proceed message: ", e);
         }
 
         while (true) {
-            try {
 
+            try {
                 String message = reader.readLine();
 
                 if (disconnectFromServer(message)) {
@@ -57,7 +62,7 @@ public class Connect implements Runnable {
                 try {
                     closeConnection();
                 } catch (IOException ex) {
-                    LOGGER.info("context", e);
+                    LOGGER.info("Failed to proceed message: ", e);
                 }
             }
         }
@@ -78,7 +83,7 @@ public class Connect implements Runnable {
     private boolean disconnectFromServer(String message) throws IOException {
 
         if (message == null || message.equalsIgnoreCase(EXIT)) {
-            LOGGER.info(CLIENT + name + " disconnect");
+            LOGGER.info("Client: " + name + " disconnect");
             closeConnection();
             return true;
         }
@@ -89,5 +94,11 @@ public class Connect implements Runnable {
         socket.close();
         reader.close();
         writer.close();
+    }
+
+    private void enterName() throws IOException {
+        writer.write("Please enter your name: ");
+        writer.flush();
+        name = reader.readLine();
     }
 }

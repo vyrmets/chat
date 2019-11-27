@@ -22,9 +22,10 @@ public class Server {
             } catch (IOException e) {
                 LOGGER.error("Failed to start server: ", e);
             }
-            if(false){
+            if (false) {
                 break;
             }
         }
     }
+
 }
