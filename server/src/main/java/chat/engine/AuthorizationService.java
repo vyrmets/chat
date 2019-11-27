@@ -12,14 +12,14 @@ public class AuthorizationService {
     private ArrayList<User> clientBase;
     private User user = new User();
 
-    public void registration(Logger logger, BufferedWriter writer, BufferedReader reader) throws IOException {
+    public void registration(BufferedWriter writer, BufferedReader reader) throws IOException {
         writer.write("Welcome to chat, please login or register");
         writer.flush();
         writer.newLine();
-        setClientBase(logger, writer, reader);
+        setClientBase(writer, reader);
     }
 
-    private void setClientBase(Logger logger, BufferedWriter writer, BufferedReader reader) throws IOException {
+    private void setClientBase(BufferedWriter writer, BufferedReader reader) throws IOException {
 
         writer.write("Enter the number '1' if you want to loggin or '2' if you want to registration: ");
         writer.flush();
