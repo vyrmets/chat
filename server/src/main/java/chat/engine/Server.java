@@ -14,11 +14,13 @@ public class Server {
 
     public void run() throws IOException {
         LOGGER.info("Server started at port: " + PORT);
+        AuthorizationService authorizationService = new AuthorizationService();
 
         while (true) {
             try (ServerSocket serverSocket = new ServerSocket(PORT)) {
                 Socket socket = serverSocket.accept();
-                new Thread(new Connect(socket)).start();
+                Connect connect = new Connect(socket, authorizationService);
+                new Thread(connect).start();
             } catch (IOException e) {
                 LOGGER.error("Failed to start server: ", e);
             }
