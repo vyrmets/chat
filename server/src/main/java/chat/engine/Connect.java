@@ -55,6 +55,7 @@ public class Connect implements Runnable {
             LOGGER.info("Clients online: " + clientsOnline.size());
 
             LOGGER.info("Client: " + name + " connected");
+
         } catch (IOException e) {
             LOGGER.info("Failed to proceed message: ", e);
         }
