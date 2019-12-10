@@ -1,5 +1,6 @@
 package chat.engine;
 
+import chat.services.AuthorizationService;
 import org.apache.log4j.Logger;
 
 import java.io.IOException;
@@ -12,13 +13,15 @@ public class Server {
 
     private static final int PORT = 8080;
 
-    public void run() throws IOException {
+    public void run() {
         LOGGER.info("Server started at port: " + PORT);
+        AuthorizationService authorizationService = new AuthorizationService();
 
         while (true) {
             try (ServerSocket serverSocket = new ServerSocket(PORT)) {
                 Socket socket = serverSocket.accept();
-                new Thread(new Connect(socket)).start();
+                Connect connect = new Connect(socket, authorizationService);
+                new Thread(connect).start();
             } catch (IOException e) {
                 LOGGER.error("Failed to start server: ", e);
             }

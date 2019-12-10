@@ -1,10 +1,14 @@
 package chat.engine;
 
+import chat.model.User;
+import chat.services.AuthorizationService;
+import chat.store.ClientsOnline;
 import org.apache.log4j.Logger;
 
 import java.io.*;
 import java.net.Socket;
 import java.nio.charset.StandardCharsets;
+import java.util.Map;
 
 public class Connect implements Runnable {
 
@@ -16,12 +20,17 @@ public class Connect implements Runnable {
 
     private Socket socket;
 
-    private BufferedWriter writer;
+    private PrintWriter writer;
 
     private BufferedReader reader;
 
-    public Connect(Socket socket) throws IOException {
+    private AuthorizationService authorizationService;
+
+    private Map<String, Socket> clientsOnline = ClientsOnline.getInstance();
+
+    public Connect(Socket socket, AuthorizationService authorizationService) throws IOException {
         this.socket = socket;
+        this.authorizationService = authorizationService;
         writer = getWriter(socket);
         reader = getReader(socket);
     }
@@ -29,21 +38,32 @@ public class Connect implements Runnable {
     @Override
     public void run() {
         try {
-            enterName();
 
-            while (name.isEmpty()) {
-                enterName();
+            User user = authorizationService.authorization(writer, reader);
+
+            if (clientsOnline.containsKey(user.getName())) {
+                LOGGER.info("This account is alredy exist");
+                writer.println("This account is alredy exist");
+                closeConnection();
+                return;
             }
+
+            name = user.getName();
+
+            clientsOnline.put(name, socket);
+
+            LOGGER.info("Clients online: " + clientsOnline.size());
 
             LOGGER.info("Client: " + name + " connected");
 
         } catch (IOException e) {
             LOGGER.info("Failed to proceed message: ", e);
         }
-
         while (true) {
             try {
                 String message = reader.readLine();
+
+                sendMessage(message);
 
                 if (disconnectFromServer(message)) {
                     break;
@@ -68,10 +88,10 @@ public class Connect implements Runnable {
         return new BufferedReader(inputStreamReader);
     }
 
-    private BufferedWriter getWriter(Socket socket) throws IOException {
+    private PrintWriter getWriter(Socket socket) throws IOException {
         OutputStream outputStream = socket.getOutputStream();
         OutputStreamWriter outputStreamWriter = new OutputStreamWriter(outputStream, StandardCharsets.UTF_8);
-        return new BufferedWriter(outputStreamWriter);
+        return new PrintWriter(outputStreamWriter, true);
     }
 
     private boolean disconnectFromServer(String message) throws IOException {
@@ -87,11 +107,14 @@ public class Connect implements Runnable {
         socket.close();
         reader.close();
         writer.close();
+        clientsOnline.remove(name);
+
     }
 
-    private void enterName() throws IOException {
-        writer.write("Please enter your name: ");
-        writer.flush();
-        name = reader.readLine();
+    private void sendMessage(String message) throws IOException {
+        for (Map.Entry<String, Socket> entry : clientsOnline.entrySet()) {
+            writer = getWriter(entry.getValue());
+            writer.println(message);
+        }
     }
 }
