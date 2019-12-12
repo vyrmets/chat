@@ -63,7 +63,9 @@ public class Connect implements Runnable {
             try {
                 String message = reader.readLine();
 
-                sendMessage(message);
+                privateMessage(message, name);
+
+                sendMessage(message, name);
 
                 if (disconnectFromServer(message)) {
                     break;
@@ -108,13 +110,26 @@ public class Connect implements Runnable {
         reader.close();
         writer.close();
         clientsOnline.remove(name);
-
     }
 
-    private void sendMessage(String message) throws IOException {
+    private void sendMessage(String message, String name) throws IOException {
+
         for (Map.Entry<String, Socket> entry : clientsOnline.entrySet()) {
-            writer = getWriter(entry.getValue());
-            writer.println(message);
+            if (entry.getValue() != socket) {
+                writer = getWriter(entry.getValue());
+                writer.println(name + ": " + message);
+            }
+        }
+    }
+
+    private void privateMessage(String message, String name) throws IOException {
+        String pm = "+";
+        String namePM = "";
+        for (Map.Entry<String, Socket> entry : clientsOnline.entrySet()) {
+            if (message.contains(pm + (namePM = entry.getKey()))) {
+                writer = getWriter(clientsOnline.get(namePM));
+                writer.println(name + ": " + message);
+            }
         }
     }
 }
