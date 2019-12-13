@@ -14,6 +14,8 @@ public class Connect implements Runnable {
 
     private static final String EXIT = "exit";
 
+    private static final String PM = "'";
+
     private static final Logger LOGGER = Logger.getLogger(Connect.class);
 
     private String name = "";
@@ -63,9 +65,11 @@ public class Connect implements Runnable {
             try {
                 String message = reader.readLine();
 
-                privateMessage(message, name);
-
-                sendMessage(message, name);
+                if (message.contains(PM)) {
+                    privateMessage(message, name);
+                } else {
+                    sendMessage(message, name);
+                }
 
                 if (disconnectFromServer(message)) {
                     break;
@@ -122,14 +126,15 @@ public class Connect implements Runnable {
         }
     }
 
-    private void privateMessage(String message, String name) throws IOException {
-        String pm = "+";
+    private boolean privateMessage(String message, String name) throws IOException {
         String namePM = "";
         for (Map.Entry<String, Socket> entry : clientsOnline.entrySet()) {
-            if (message.contains(pm + (namePM = entry.getKey()))) {
+            if (message.contains(PM + (namePM = entry.getKey()))) {
                 writer = getWriter(clientsOnline.get(namePM));
                 writer.println(name + ": " + message);
+                return true;
             }
         }
+        return false;
     }
 }
