@@ -2,6 +2,7 @@ package chat.engine;
 
 import chat.model.User;
 import chat.services.AuthorizationService;
+import chat.store.AppConsts;
 import chat.store.ClientsOnline;
 import org.apache.log4j.Logger;
 
@@ -12,9 +13,9 @@ import java.util.Map;
 
 public class Connect implements Runnable {
 
-    private static final String EXIT = "exit";
+  //  private static final String EXIT = "exit";
 
-    private static final String PM = "'";
+  //  private static final String PM = "'";
 
     private static final Logger LOGGER = Logger.getLogger(Connect.class);
 
@@ -29,6 +30,8 @@ public class Connect implements Runnable {
     private AuthorizationService authorizationService;
 
     private Map<String, Socket> clientsOnline = ClientsOnline.getInstance();
+
+    private AppConsts appConsts = new AppConsts();
 
     public Connect(Socket socket, AuthorizationService authorizationService) throws IOException {
         this.socket = socket;
@@ -65,7 +68,7 @@ public class Connect implements Runnable {
             try {
                 String message = reader.readLine();
 
-                if (message.contains(PM)) {
+                if (message.contains(appConsts.PM)) {
                     privateMessage(message, name);
                 } else {
                     sendMessage(message, name);
@@ -101,7 +104,7 @@ public class Connect implements Runnable {
     }
 
     private boolean disconnectFromServer(String message) throws IOException {
-        if (message == null || message.equalsIgnoreCase(EXIT)) {
+        if (message == null || message.equalsIgnoreCase(appConsts.EXIT)) {
             LOGGER.info("Client: " + name + " disconnect");
             closeConnection();
             return true;
@@ -126,15 +129,13 @@ public class Connect implements Runnable {
         }
     }
 
-    private boolean privateMessage(String message, String name) throws IOException {
+    private void privateMessage(String message, String name) throws IOException {
         String namePM = "";
         for (Map.Entry<String, Socket> entry : clientsOnline.entrySet()) {
-            if (message.contains(PM + (namePM = entry.getKey()))) {
+            if (message.contains(namePM = entry.getKey())) {
                 writer = getWriter(clientsOnline.get(namePM));
                 writer.println(name + ": " + message);
-                return true;
             }
         }
-        return false;
     }
 }
