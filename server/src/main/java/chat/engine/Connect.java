@@ -15,7 +15,7 @@ public class Connect implements Runnable {
 
     private static final Logger LOGGER = Logger.getLogger(Connect.class);
 
-    public static final String ANSI_RED = "\u001B[31m";
+    private static final String ANSI_RED = "\u001B[31m";
 
     private String name = "";
 
