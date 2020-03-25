@@ -13,11 +13,9 @@ import java.util.Map;
 
 public class Connect implements Runnable {
 
-  //  private static final String EXIT = "exit";
-
-  //  private static final String PM = "'";
-
     private static final Logger LOGGER = Logger.getLogger(Connect.class);
+
+    public static final String ANSI_RED = "\u001B[31m";
 
     private String name = "";
 
@@ -31,7 +29,7 @@ public class Connect implements Runnable {
 
     private Map<String, Socket> clientsOnline = ClientsOnline.getInstance();
 
-    private AppConsts appConsts = new AppConsts();
+    private AppConsts consts = new AppConsts();
 
     public Connect(Socket socket, AuthorizationService authorizationService) throws IOException {
         this.socket = socket;
@@ -68,7 +66,7 @@ public class Connect implements Runnable {
             try {
                 String message = reader.readLine();
 
-                if (message.contains(appConsts.PM)) {
+                if (message.contains(consts.PM)) {
                     privateMessage(message, name);
                 } else {
                     sendMessage(message, name);
@@ -104,7 +102,7 @@ public class Connect implements Runnable {
     }
 
     private boolean disconnectFromServer(String message) throws IOException {
-        if (message == null || message.equalsIgnoreCase(appConsts.EXIT)) {
+        if (message == null || message.equalsIgnoreCase(consts.EXIT)) {
             LOGGER.info("Client: " + name + " disconnect");
             closeConnection();
             return true;
@@ -130,11 +128,10 @@ public class Connect implements Runnable {
     }
 
     private void privateMessage(String message, String name) throws IOException {
-        String namePM = "";
         for (Map.Entry<String, Socket> entry : clientsOnline.entrySet()) {
-            if (message.contains(namePM = entry.getKey())) {
-                writer = getWriter(clientsOnline.get(namePM));
-                writer.println(name + ": " + message);
+            if (message.contains(entry.getKey())) {
+                writer = getWriter(entry.getValue());
+                writer.println(ANSI_RED + name + ": " + message + ANSI_RED);
             }
         }
     }
