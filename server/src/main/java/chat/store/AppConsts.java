@@ -2,7 +2,7 @@ package chat.store;
 
 public class AppConsts {
 
-    public final String EXIT = "exit";
+    public static final String EXIT = "exit";
 
-    public final String PM = "'";
+    public static final String PM = "'";
 }

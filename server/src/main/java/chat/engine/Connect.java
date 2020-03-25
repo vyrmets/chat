@@ -2,7 +2,6 @@ package chat.engine;
 
 import chat.model.User;
 import chat.services.AuthorizationService;
-import chat.store.AppConsts;
 import chat.store.ClientsOnline;
 import org.apache.log4j.Logger;
 
@@ -10,6 +9,9 @@ import java.io.*;
 import java.net.Socket;
 import java.nio.charset.StandardCharsets;
 import java.util.Map;
+
+import static chat.store.AppConsts.EXIT;
+import static chat.store.AppConsts.PM;
 
 public class Connect implements Runnable {
 
@@ -28,8 +30,6 @@ public class Connect implements Runnable {
     private AuthorizationService authorizationService;
 
     private Map<String, Socket> clientsOnline = ClientsOnline.getInstance();
-
-    private AppConsts consts = new AppConsts();
 
     public Connect(Socket socket, AuthorizationService authorizationService) throws IOException {
         this.socket = socket;
@@ -66,7 +66,7 @@ public class Connect implements Runnable {
             try {
                 String message = reader.readLine();
 
-                if (message.contains(consts.PM)) {
+                if (message.contains(PM)) {
                     privateMessage(message, name);
                 } else {
                     sendMessage(message, name);
@@ -102,7 +102,7 @@ public class Connect implements Runnable {
     }
 
     private boolean disconnectFromServer(String message) throws IOException {
-        if (message == null || message.equalsIgnoreCase(consts.EXIT)) {
+        if (message == null || message.equalsIgnoreCase(EXIT)) {
             LOGGER.info("Client: " + name + " disconnect");
             closeConnection();
             return true;
