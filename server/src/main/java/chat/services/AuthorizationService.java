@@ -1,10 +1,12 @@
 package chat.services;
 
+import chat.database.UsersBase;
 import chat.model.User;
 
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.PrintWriter;
+import java.sql.SQLException;
 import java.util.ArrayList;
 
 public class AuthorizationService {
@@ -12,7 +14,16 @@ public class AuthorizationService {
 
     private ArrayList<User> clientBase = new ArrayList<>();
 
-    public User authorization(PrintWriter writer, BufferedReader reader) throws IOException {
+    public User authorization(PrintWriter writer, BufferedReader reader) throws IOException, SQLException, ClassNotFoundException {
+
+        UsersBase usersBase = new UsersBase();
+
+        clientBase.addAll(usersBase.dataBase());
+
+        for (User u : clientBase) {
+            System.out.println(u);
+        }
+
         writer.println("Welcome to chat, please login or register");
         writer.println(ENTER_NUMBER);
 
