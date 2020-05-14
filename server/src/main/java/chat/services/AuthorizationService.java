@@ -14,9 +14,11 @@ public class AuthorizationService {
 
     private ArrayList<User> clientBase = new ArrayList<>();
 
+    private UsersBase usersBase;
+
     public User authorization(PrintWriter writer, BufferedReader reader) throws IOException, SQLException, ClassNotFoundException {
 
-        UsersBase usersBase = new UsersBase();
+        usersBase = new UsersBase();
 
         clientBase.addAll(usersBase.dataBase());
 
@@ -87,6 +89,12 @@ public class AuthorizationService {
         if (user.getPassword().equals(confirm)) {
             writer.println("Registration success, please enter your first message: ");
             clientBase.add(user);
+            try {
+                usersBase = new UsersBase();
+                usersBase.addToDataBase(user.getName(),user.getPassword());
+            } catch (SQLException | ClassNotFoundException e) {
+                e.printStackTrace();
+            }
             return user;
         } else {
             writer.println("Registration failed, please try again");

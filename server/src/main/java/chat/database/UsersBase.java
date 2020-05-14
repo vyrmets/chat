@@ -9,33 +9,40 @@ import java.util.List;
 
 public class UsersBase {
 
-    // private User user;
-
     private static final Logger LOGGER = Logger.getLogger(UsersBase.class);
     private static final String URL = "jdbc:mysql://localhost:3306/Users?serverTimezone=UTC";
     private static final String NAME_BASE = "root";
     private static final String PASS_BASE = "root123321";
     private Connection connection;
-    private Statement statement;
-    private ResultSet resultSet;
-    // private String SQL_INSERT = "INSERT INTO user VALUES" + "('" + user.getName() + "','" + user.getPassword() + "')";
-    private String SQL_SHOW = "SELECT * FROM user";
+    private PreparedStatement preparedStatement;
+    private static final String SQL_INSERT = "INSERT INTO user (name, password) VALUES (?,?)";
+    private static final String SQL_SHOW = "SELECT * FROM user";
 
     public UsersBase() throws SQLException, ClassNotFoundException {
         this.connection = connectionBase();
-        this.statement = statement(connection);
-        this.resultSet = displayBase(SQL_SHOW);
     }
 
+    public void addToDataBase(String name, String password) throws SQLException {
+        preparedStatement = preparedStatement(connection, SQL_INSERT);
+        preparedStatement.setString(1, name);
+        preparedStatement.setString(2, password);
+        preparedStatement.executeUpdate();
+        closeConnectionBase();
+    }
 
     public List<User> dataBase() throws SQLException {
         List<User> list = new ArrayList<>();
+        preparedStatement = preparedStatement(connection, SQL_SHOW);
+        ResultSet resultSet = displayBase();
+
         while (resultSet.next()) {
             User user = new User();
             user.setName(resultSet.getString("name"));
             user.setPassword(resultSet.getString("password"));
             list.add(user);
         }
+        closeConnectionBase();
+        resultSet.close();
         return list;
     }
 
@@ -47,17 +54,17 @@ public class UsersBase {
         return connection;
     }
 
-    private Statement statement(Connection connection) throws SQLException {
-        return connection.createStatement();
+    private PreparedStatement preparedStatement(Connection connection, String sql) throws SQLException {
+        return connection.prepareStatement(sql);
     }
 
-    private ResultSet displayBase(String sql) throws SQLException {
-        return statement.executeQuery(sql);
+    private ResultSet displayBase() throws SQLException {
+        return preparedStatement.executeQuery();
     }
 
     private void closeConnectionBase() throws SQLException {
-        resultSet.close();
-        statement.close();
+        preparedStatement.close();
         connection.close();
+        LOGGER.info("Connection with DB close");
     }
 }
