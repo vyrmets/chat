@@ -12,7 +12,7 @@ import java.util.ArrayList;
 
 public class AuthorizationService {
     private static final String ENTER_NUMBER = "Enter the number '1' if you want to loggin or '2' if you want to registration: ";
-    private static final Logger LOGGER = Logger.getLogger(UsersBase.class);
+    private static final Logger LOGGER = Logger.getLogger(AuthorizationService.class);
     private ArrayList<User> clientBase = new ArrayList<>();
     private UsersBase usersBase;
 
