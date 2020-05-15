@@ -46,7 +46,7 @@ public class UsersBase {
         return list;
     }
 
-    private Connection connectionBase() throws ClassNotFoundException, SQLException {
+    private Connection connectionBase() throws SQLException {
         LOGGER.info("Registering JDBC driver...");
         Connection connectionDB = DriverManager.getConnection(URL, NAME_BASE, PASS_BASE);
         LOGGER.info("Database connected!");

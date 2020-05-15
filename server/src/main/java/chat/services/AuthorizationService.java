@@ -2,6 +2,7 @@ package chat.services;
 
 import chat.database.UsersBase;
 import chat.model.User;
+import org.apache.log4j.Logger;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -11,9 +12,8 @@ import java.util.ArrayList;
 
 public class AuthorizationService {
     private static final String ENTER_NUMBER = "Enter the number '1' if you want to loggin or '2' if you want to registration: ";
-
+    private static final Logger LOGGER = Logger.getLogger(UsersBase.class);
     private ArrayList<User> clientBase = new ArrayList<>();
-
     private UsersBase usersBase;
 
     public User authorization(PrintWriter writer, BufferedReader reader) throws IOException, SQLException, ClassNotFoundException {
@@ -23,7 +23,7 @@ public class AuthorizationService {
         clientBase.addAll(usersBase.dataBase());
 
         for (User u : clientBase) {
-            System.out.println(u);
+            LOGGER.info(u);
         }
 
         writer.println("Welcome to chat, please login or register");
