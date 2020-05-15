@@ -47,11 +47,10 @@ public class UsersBase {
     }
 
     private Connection connectionBase() throws ClassNotFoundException, SQLException {
-        Class.forName("com.mysql.jdbc.Driver");
         LOGGER.info("Registering JDBC driver...");
-        Connection connection = DriverManager.getConnection(URL, NAME_BASE, PASS_BASE);
+        Connection connectionDB = DriverManager.getConnection(URL, NAME_BASE, PASS_BASE);
         LOGGER.info("Database connected!");
-        return connection;
+        return connectionDB;
     }
 
     private PreparedStatement preparedStatement(Connection connection, String sql) throws SQLException {

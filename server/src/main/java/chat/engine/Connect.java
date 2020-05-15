@@ -63,7 +63,7 @@ public class Connect implements Runnable {
         } catch (IOException e) {
             LOGGER.info("Failed to proceed message: ", e);
         } catch (SQLException | ClassNotFoundException e) {
-            e.printStackTrace();
+            LOGGER.info("Failed to connect Database ", e);
         }
         while (true) {
             try {
