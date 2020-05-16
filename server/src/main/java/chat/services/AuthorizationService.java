@@ -1,6 +1,6 @@
 package chat.services;
 
-import chat.database.UsersBase;
+import chat.database.UsersRepository;
 import chat.model.User;
 import org.apache.log4j.Logger;
 
@@ -14,13 +14,13 @@ public class AuthorizationService {
     private static final String ENTER_NUMBER = "Enter the number '1' if you want to loggin or '2' if you want to registration: ";
     private static final Logger LOGGER = Logger.getLogger(AuthorizationService.class);
     private ArrayList<User> clientBase = new ArrayList<>();
-    private UsersBase usersBase;
+    private UsersRepository usersBase;
 
     public User authorization(PrintWriter writer, BufferedReader reader) throws IOException, SQLException, ClassNotFoundException {
 
-        usersBase = new UsersBase();
+        usersBase = new UsersRepository();
 
-        clientBase.addAll(usersBase.dataBase());
+        clientBase.addAll(usersBase.getAllUsers());
 
         for (User u : clientBase) {
             LOGGER.info(u);
@@ -89,8 +89,8 @@ public class AuthorizationService {
         if (user.getPassword().equals(confirm)) {
             writer.println("Registration success, please enter your first message: ");
             clientBase.add(user);
-            usersBase = new UsersBase();
-            usersBase.addToDataBase(user.getName(), user.getPassword());
+            usersBase = new UsersRepository();
+            usersBase.saveUser(user);
             return user;
         } else {
             writer.println("Registration failed, please try again");
