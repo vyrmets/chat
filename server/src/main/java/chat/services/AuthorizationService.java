@@ -1,30 +1,23 @@
 package chat.services;
 
+import chat.database.UserBase;
 import chat.database.UsersRepository;
 import chat.model.User;
-import org.apache.log4j.Logger;
 
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.sql.SQLException;
-import java.util.ArrayList;
+import java.util.List;
 
 public class AuthorizationService {
     private static final String ENTER_NUMBER = "Enter the number '1' if you want to loggin or '2' if you want to registration: ";
-    private static final Logger LOGGER = Logger.getLogger(AuthorizationService.class);
-    private ArrayList<User> clientBase = new ArrayList<>();
-    private UsersRepository usersBase;
+    private List<User> clientBase = UserBase.getInstance();
+    private UsersRepository usersBase = new UsersRepository();
 
     public User authorization(PrintWriter writer, BufferedReader reader) throws IOException, SQLException, ClassNotFoundException {
 
-        usersBase = new UsersRepository();
-
         clientBase.addAll(usersBase.getAllUsers());
-
-        for (User u : clientBase) {
-            LOGGER.info(u);
-        }
 
         writer.println("Welcome to chat, please login or register");
         writer.println(ENTER_NUMBER);
@@ -72,7 +65,7 @@ public class AuthorizationService {
         return null;
     }
 
-    private User registration(PrintWriter writer, BufferedReader reader) throws IOException, SQLException, ClassNotFoundException {
+    private User registration(PrintWriter writer, BufferedReader reader) throws IOException {
         User user = new User();
         writer.println("Please enter your name: ");
         user.setName(reader.readLine());
@@ -89,7 +82,6 @@ public class AuthorizationService {
         if (user.getPassword().equals(confirm)) {
             writer.println("Registration success, please enter your first message: ");
             clientBase.add(user);
-            usersBase = new UsersRepository();
             usersBase.saveUser(user);
             return user;
         } else {
