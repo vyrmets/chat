@@ -3,18 +3,16 @@ package chat.database;
 import chat.model.User;
 import org.apache.log4j.Logger;
 
-import java.io.FileInputStream;
-import java.io.IOException;
 import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Properties;
 
 public class UsersRepository {
 
     private static final Logger LOGGER = Logger.getLogger(UsersRepository.class);
     private static final String SQL_INSERT = "INSERT INTO user (name, password) VALUES (?,?)";
     private static final String SQL_SHOW = "SELECT * FROM user";
+    private InitializationProperties initializationProperties = new InitializationProperties();
 
     public void saveUser(User user) {
         try (Connection connection = connectionBase(); PreparedStatement preparedStatement = connection.prepareStatement(SQL_INSERT)) {
@@ -42,20 +40,8 @@ public class UsersRepository {
     }
 
     private Connection connectionBase() throws SQLException {
-        Properties properties = new Properties();
-        String URL = "";
-        String NAME_BASE = "";
-        String PASS_BASE = "";
-        try (FileInputStream fileInputStream = new FileInputStream("db.properties")) {
-            properties.load(fileInputStream);
-            URL = properties.getProperty("url");
-            NAME_BASE = properties.getProperty("user");
-            PASS_BASE = properties.getProperty("pass");
-        } catch (IOException e) {
-            LOGGER.info("Faild to take url and password", e);
-        }
         LOGGER.info("Registering JDBC driver...");
-        Connection connectionDB = DriverManager.getConnection(URL, NAME_BASE, PASS_BASE);
+        Connection connectionDB = DriverManager.getConnection(initializationProperties.getPropertiesUrl("url"), initializationProperties.getPropertiesName("user"), initializationProperties.getPropertiesPass("pass"));
         LOGGER.info("Database connected!");
 
         return connectionDB;

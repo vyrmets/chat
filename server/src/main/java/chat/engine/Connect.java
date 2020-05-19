@@ -8,7 +8,6 @@ import org.apache.log4j.Logger;
 import java.io.*;
 import java.net.Socket;
 import java.nio.charset.StandardCharsets;
-import java.sql.SQLException;
 import java.util.Map;
 
 import static chat.store.AppConsts.EXIT;
@@ -62,8 +61,6 @@ public class Connect implements Runnable {
 
         } catch (IOException e) {
             LOGGER.info("Failed to proceed message: ", e);
-        } catch (SQLException | ClassNotFoundException e) {
-            LOGGER.info("Failed to connect Database ", e);
         }
         while (true) {
             try {

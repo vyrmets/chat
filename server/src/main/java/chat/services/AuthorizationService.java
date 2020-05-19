@@ -7,7 +7,6 @@ import chat.model.User;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.PrintWriter;
-import java.sql.SQLException;
 import java.util.List;
 
 public class AuthorizationService {
@@ -15,7 +14,7 @@ public class AuthorizationService {
     private List<User> clientBase = UserBase.getInstance();
     private UsersRepository usersBase = new UsersRepository();
 
-    public User authorization(PrintWriter writer, BufferedReader reader) throws IOException, SQLException, ClassNotFoundException {
+    public User authorization(PrintWriter writer, BufferedReader reader) throws IOException {
 
         clientBase.addAll(usersBase.getAllUsers());
 
