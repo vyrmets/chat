@@ -1,18 +1,23 @@
 package chat.services;
 
+import chat.database.UserBase;
+import chat.database.UsersRepository;
 import chat.model.User;
 
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.PrintWriter;
-import java.util.ArrayList;
+import java.util.List;
 
 public class AuthorizationService {
     private static final String ENTER_NUMBER = "Enter the number '1' if you want to loggin or '2' if you want to registration: ";
-
-    private ArrayList<User> clientBase = new ArrayList<>();
+    private List<User> clientBase = UserBase.getInstance();
+    private UsersRepository usersBase = new UsersRepository();
 
     public User authorization(PrintWriter writer, BufferedReader reader) throws IOException {
+
+        clientBase.addAll(usersBase.getAllUsers());
+
         writer.println("Welcome to chat, please login or register");
         writer.println(ENTER_NUMBER);
 
@@ -76,6 +81,7 @@ public class AuthorizationService {
         if (user.getPassword().equals(confirm)) {
             writer.println("Registration success, please enter your first message: ");
             clientBase.add(user);
+            usersBase.saveUser(user);
             return user;
         } else {
             writer.println("Registration failed, please try again");
